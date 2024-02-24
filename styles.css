@@ -1,0 +1,225 @@
+html {
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+.block-container {
+    padding: 0 5rem;
+}
+
+footer {
+    display: none
+}
+
+[data-testid="stHeader"] {
+    display: none
+}
+
+[data-testid="stAppViewContainer"] > .main {
+    background-color: #F7F7F7;
+}
+
+[data-testid="stSidebarContent"] {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+[data-testid="stSidebarUserContent"]  button[kind="primary"] {
+    background-color: #004A71;
+    border: 1px solid #003A54;
+}
+
+[data-testid="stSidebarUserContent"]  button[kind="secondary"]:hover {
+    color: #003A54;
+    border: 1px solid #003A54;
+}
+
+div.stDateInput {
+    width: 100%;
+    max-width: 200px;
+}
+
+.block-container {
+    padding: 0 5rem;
+}
+
+/* Estilos para o dashboard */
+
+.dashboard_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    top: 0;
+}
+
+.dashboard_title {
+    position: relative;
+}
+
+.dashboard_subtitle {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0;
+    position: absolute;
+    top: 85%;
+    word-wrap: break-word;
+    white-space: wrap;
+    max-width: 400px;
+    text-align: justify;
+}
+
+.highlighted {
+    color: #004A71;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+
+.dashboard_logo {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    min-width: 150px;
+}
+
+/* Estilos para o card */
+
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 15px 8px;
+    max-height: 200vh;
+    height: 120px;
+    width: 100%;
+    max-width: 250px;
+
+}
+
+.card_title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+    color: #004A71;
+
+    word-wrap: break-word;
+    white-space: wrap;
+    width: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 75px;
+}
+
+.card p {
+    font-size: 0.9rem;
+    margin: 0;
+    text-align: center;
+}
+
+.section_title {
+    font-size: 1.4rem;
+}
+
+/* Estilos para sidebar */
+.sidebar_logo {
+    max-width: 100%;
+    height: auto;
+    width: 300px;
+    min-width: 100px;
+}
+
+
+/* Estilos para a página inicial */
+.home_container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.home_container p, .home_container li{
+    font-size: 1.1rem;
+    text-align: justify;
+}
+
+.home_container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.home_container ul {
+    padding-left: 20px;
+}
+
+.home_container h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+
+/* Regras telas menores */
+@media screen and (max-width: 1024px){
+    .card {
+        max-width: 100%;
+        font-size: 2.5vh;
+    }
+
+    .card_title {
+        font-size: 1.1rem;
+    }
+
+    .card p {
+        font-size: 1.5vw;
+        margin: 0;
+        text-align: center;
+    }
+
+}
+
+@media screen and (max-width: 768px){
+    .dashboard_title {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+    }
+
+    .dashboard_subtitle {
+        font-size: 1rem;
+        top: 80%;
+    }
+
+}
+
+@media screen and (max-width: 640px){
+    .card {
+        margin: 10px 0;
+    }
+
+}
+
+@media screen and (max-width: 480px){
+    .card p {
+        font-size: 3.5vw;
+    }
+
+}

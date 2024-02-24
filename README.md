@@ -1,52 +1,157 @@
-# Desafio Técnico - Cientista de Dados Júnior
 
-## Descrição
+<h1 align="center">
+    <a href="https://www.1746.rio/hc/pt-br" target="_blank"><img src="static/logo-1746.png" alt="Central 1746" width="150"></a>
+    </br>Análise de chamados da Central 1746
+</br>
+<img src="https://img.shields.io/badge/3.10-%233776AB?style=flat-square&logo=python&logoColor=white&label=Python" alt="Python 3.10">
+<img src="https://img.shields.io/badge/black-%23000000?style=flat-square&label=code%20style&link=https%3A%2F%2Fgithub.com%2Fpsf%2Fblack" alt="Code Style Black">
+</h1>
 
-Bem-vindo ao desafio técnico para a vaga de Cientista de Dados Júnior no Escritório Municipal de Dados do Rio de Janeiro! Este desafio tem o objetivo de avaliar suas habilidades técnicas em manipulação de dados, consulta SQL, análise de dados e visualização de dados utilizando ferramentas como BigQuery e Python. A **data limite** do seu último commit no repositório é de **25/02/2024 às 23:59 UTC-3**.
+<div align="center">
 
-### Objetivo
+<img src="https://img.shields.io/badge/-DVC-blue?style=flat-square&logo=dvc&logoColor=white&color=%239463CF" alt="DVC">
+<img src="https://img.shields.io/badge/-Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white" alt="Streamlit">
+<img src="https://img.shields.io/badge/-Plotly-3F4F75?style=flat-square&logo=plotly&logoColor=white" alt="Plotly">
+<img src="https://img.shields.io/badge/-Pandas-150458?style=flat-square&logo=pandas&logoColor=white" alt="Pandas">
+<img src="https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
 
-O objetivo deste desafio é realizar análises exploratórias em conjuntos de dados públicos disponíveis no BigQuery, responder a perguntas específicas sobre esses dados utilizando SQL e Python, e criar visualizações informativas e visualmente atraentes.
+<p>Dashboard interativo para visualização e análise dos dados da Central 1746 do Rio de Janeiro.</p>
+<img src="https://i.imgur.com/UJlInkz.gif"/>
+<hr/>
+<table border=0 cellspacing=0 celspadding=0>
+  <tr>
+    <td><img src="https://imgur.com/iqO8VhW.jpg" width="240px"/></td>
+    <td><img src="https://imgur.com/3vHlKLr.jpg" width="240px"/></td>
+    <td><img src="https://imgur.com/k3DQQQg.jpg" width="240px"/></td>
 
-#### Observação
+  </tr>
+</table>
+</div>
 
-É esperado que você possa não ter tido contato prévio com algumas das tecnologias solicitadas no desafio, e isso é intencional. Parte da avaliação consiste em verificar se você é capaz de aprender rapidamente e produzir resultados após estudar as tecnologias por algum tempo. Por essa razão, o desafio tem uma duração de 15 dias, permitindo que você tenha tempo para estudar e aprender antes de enviar suas respostas.
+## :pushpin: Tópicos
 
-### Conjunto de Dados
+- [📃 Sobre o Projeto](#page_with_curl-sobre-o-projeto)
+- [🎉 Funcionalidades](#tada-funcionalidades)
+- [🔧 Pré-requisitos](#wrench-pré-requisitos)
+- [🚀 Como Rodar o Projeto](#rocket-como-rodar-o-projeto)
+    - [🐳 Docker ou Docker Compose](#whale-docker-ou-docker-compose)
+    - [📦 Poetry](#package-poetry)
+    - [🐍 Pip](#snake-pip)
+- [💾 Dados](#floppy_disk-dados)
+- [👀 Solução do Desafio](#eyes-solução-do-desafio)
 
-Os conjuntos de dados que serão utilizados neste desafio são:
+## :page_with_curl: Sobre o Projeto
 
-- **Chamados do 1746:** Dados relacionados a chamados de serviços públicos na cidade do Rio de Janeiro. O caminho da tabela é : `datario.administracao_servicos_publicos.chamado_1746`
-- **Bairros do Rio de Janeiro:** Dados sobre os bairros da cidade do Rio de Janeiro - RJ. O caminho da tabela é: `datario.dados_mestres.bairro`
-- **Ocupação Hoteleira em Grandes Eventos no Rio**: Dados contendo o período de duração de alguns grandes eventos que ocorreram no Rio de Janeiro em 2022 e 2023 e a taxa de ocupação hoteleira da cidade nesses períodos. O caminho da tabela é: `datario.turismo_fluxo_visitantes.rede_hoteleira_ocupacao_eventos`
+Este projeto consiste em um dashboard interativo para visualização e análise dos dados da Central 1746 do Rio de Janeiro durante o período de 2022 a 2023. A Central 1746 é responsável por receber e registrar solicitações, reclamações e denúncias dos cidadãos relacionadas a serviços públicos municipais.
 
-### Ferramentas e Recursos
 
-Você precisará de acesso ao Google Cloud Platform (GCP) para utilizar o BigQuery e consultar os dados públicos disponíveis no projeto `datario`. Além disso, vamos utilizar a biblioteca `basedosdados` em Python para acessar os dados do BigQuery.
+## :tada: Funcionalidades
 
-- Tutorial para acessar dados no BigQuery, desde a criação da conta no GCP até consultar os dados utilizando SQL e Python: [Como acessar dados no BigQuery](https://docs.dados.rio/tutoriais/como-acessar-dados/)
+- Visualização de informações gerais sobre os atendimentos realizados.
+- Análise ao longo do tempo.
+- Geolocalização com destaque para os bairros com maior número de ocorrências.
 
-### Perguntas do Desafio
+## :wrench: Pré-requisitos
 
-As perguntas do desafio estão detalhadas no arquivo `perguntas_desafio.md`.
+Antes de executar a aplicação, certifique-se de ter os seguintes pré-requisitos instalados e configurados em sua máquina:
 
-## Etapas
+- Ambiente com Python 3.10
+- [DVC](https://dvc.org/doc/install) com suporte ao Google Drive
+- [Docker](https://docs.docker.com/manuals/) (caso opte por executar a aplicação via Docker)
+- [Poetry](https://python-poetry.org/docs/#installation) (caso opte por utilizar Poetry)
 
-1. Siga o tutorial acima para criar sua conta no GCP e aprender como utilizar o BigQuery para consultar os dados.
-2. Faça um fork desse repositório.
-3. Utilize SQL para resolver todas as questões contidas no arquivo `perguntas_desafio.md` no BigQuery. Salve suas respostas em um arquivo `analise_sql.sql`.
-4. Utilize Python e pandas para resolver todas as questões contidas no arquivo `perguntas_desafio.md`. Salve suas respostas em um arquivo `analise_python.py` ou `analise_python.ipynb`. Para acessar os dados do BigQuery no python, siga o tutorial acima e utilize a biblioteca `basedosdados`.
-6. Utilize o LookerStudio, Power BI, StreamLit, Tableau ou qualquer outra ferramenta de visualização de sua preferência para criar visualizações informativas dos dados das 3 tabelas. Suas visualizações não precisam se limitar apenas aos resultados das análises; é encorajado que você explore os dados e crie visualizações interessantes sobre eles.
-7. Faça commits incrementais à medida que trabalha no desafio e, finalmente, faça push do seu código para o seu repositório no GitHub. Seu repositório deve conter um README com todos os passos necessários para rodar seu código e ver a visualização de dados que você criou.
 
-### Dúvidas
+Além disso, é necessário baixar os dados necessários para a aplicação via DVC do Google Drive. Para baixar os dados, execute os seguintes comandos:
 
-Se tiver alguma dúvida ou precisar de esclarecimentos adicionais sobre o desafio, entre em contato pelo email escritoriodedados@gmail.com.
 
-Boa sorte e estamos ansiosos para ver suas soluções! 
 
----
 
-**Escritório de Dados**  
-**Prefeitura da Cidade do Rio de Janeiro**
+```bash
+# Instale o DVC com suporte ao Google Drive (caso ainda não tenha instalado)
+python -m pip install "dvc[gdrive]"
 
+# Clone o repositório
+git clone https://github.com/jessicacardoso/emd-analise-central-1746.git
+
+# Acesse o diretório do projeto
+cd emd-analise-central-1746
+
+# Baixe os dados necessários no diretório data
+dvc get https://github.com/jessicacardoso/emd-analise-central-1746/ \
+    data/rede_hoteleira_ocupacao_eventos.parquet \
+    -o data/rede_hoteleira_ocupacao_eventos.parquet
+
+dvc get https://github.com/jessicacardoso/emd-analise-central-1746/ \
+    data/bairro.parquet -o data/bairro.parquet
+
+dvc get https://github.com/jessicacardoso/emd-analise-central-1746/ \
+    data/chamado_1746.parquet -o data/chamado_1746.parquet
+```
+
+## :rocket: Como Rodar o Projeto
+
+Após instalar e configurar os pré-requisitos, você pode executar a aplicação via Docker, Poetry ou Pip. Escolha a opção que preferir:
+
+### :whale: Docker ou Docker Compose
+
+Se você preferir utilizar Docker, siga os passos abaixo:
+
+1. Certifique-se de ter o Docker instalado em sua máquina.
+
+2. Execute o seguinte comando para construir a imagem Docker:
+    ```bash
+    docker build -t dashboard-1746 .
+    ```
+3. Após a construção da imagem, execute o seguinte comando para iniciar o contêiner:
+    ```bash
+    docker run -p 8501:8501 dashboard-1746
+    ```
+4. Ou, se preferir, execute o seguinte comando para iniciar o contêiner com o Docker Compose:
+    ```bash
+    docker compose up
+    ```
+5. Acesse a aplicação em seu navegador através do seguinte endereço:
+http://localhost:8501.
+
+### :package: Poetry
+
+Se você prefere usar Poetry, siga os passos abaixo:
+
+1. Instale as dependências do projeto.
+    ```bash
+    poetry install
+    ```
+2. Após a instalação das dependências, execute o seguinte comando para iniciar a aplicação:
+    ```bash
+    poetry run streamlit run streamlit_app.py
+    ```
+3. Acesse o endereço exibido no terminal (normalmente http://localhost:8501).
+
+### :snake: Pip
+
+Se você prefere usar o pip, siga os passos abaixo:
+
+1. Instale as dependências do projeto.
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+2. Após a instalação das dependências, execute o seguinte comando para iniciar a aplicação:
+    ```bash
+    streamlit run streamlit_app.py
+    ```
+3. Acesse o endereço exibido no terminal (normalmente http://localhost:8501).
+
+## :floppy_disk: Dados
+
+Os dados utilizados neste projeto foram obtidos do projeto `datario`, disponível no Google Cloud Platform. Eles contêm informações sobre as ocorrências registradas na Central 1746, incluindo detalhes como tipo de serviço, localização, data e hora. As instruções para obter os dados estão disponíveis no [tutorial do Escritório de Dados](https://docs.dados.rio/tutoriais/como-acessar-dados/).
+
+Abaixo, temos um diagrama das tabelas utilizadas no projeto:
+
+<div align="center">
+    <img src="dicionario-dados/tabelas-desafio.svg" height="600" alt="Tabelas do Desafio">
+</div>
+
+## 	:eyes: Solução do Desafio
+
+A solução das questões propostas no desafio está disponível no diretório `desafio`. Para acessar a solução, [clique aqui](desafio/README.md). Também foram desenvolvidos notebooks contendo a análise exploratória dos dados e previsão de chamados por status e no prazo. Para acessar os notebooks, [clique aqui](notebooks/README.md).
