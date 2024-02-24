@@ -60,7 +60,9 @@ Antes de executar a aplicação, certifique-se de ter os seguintes pré-requisit
 - [Docker](https://docs.docker.com/manuals/) (caso opte por executar a aplicação via Docker)
 - [Poetry](https://python-poetry.org/docs/#installation) (caso opte por utilizar Poetry)
 
+
 Além disso, é necessário baixar os dados necessários para a aplicação via DVC do Google Drive. Para baixar os dados, execute os seguintes comandos:
+
 
 
 
