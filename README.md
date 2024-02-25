@@ -155,3 +155,22 @@ Abaixo, temos um diagrama das tabelas utilizadas no projeto:
 ## 	:eyes: Solução do Desafio
 
 A solução das questões propostas no desafio está disponível no diretório `desafio`. Para acessar a solução, [clique aqui](desafio/README.md). Também foram desenvolvidos notebooks contendo a análise exploratória dos dados e previsão de chamados por status e no prazo. Para acessar os notebooks, [clique aqui](notebooks/README.md).
+
+## :speech_balloon: Autora
+
+<a href="https://dev.to/jessicacardoso">
+ <img style="border-radius: 50%;" src="https://media.dev.to/cdn-cgi/image/width=320,height=320,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F837381%2F33ef7bdf-5edd-4171-824c-317b16a8f916.gif" width="100px;" alt=""/>
+ <br />
+ <sub><b>Jessica Cardoso</b></sub></a> <a href="https://dev.to/jessicacardoso" title="Dev.to">🚀</a>
+
+
+Feito com ❤️ por Jessica Cardoso 👋🏽 Entre em contato!
+
+[![Discord Badge](https://img.shields.io/badge/-jessica-5865F2?style=flat-square&logo=Discord&logoColor=white&link=https://discord.com/users/601214907400060937)](https://discord.com/users/601214907400060937)
+[![Linkedin Badge](https://img.shields.io/badge/-Jessica-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/acissej/)](https://www.linkedin.com/in/acissej//)
+[![Gmail Badge](https://img.shields.io/badge/-jcardoso@inf.puc--rio.br-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:jcardoso@inf.puc-rio.br)](mailto:jcardoso@inf.puc-rio.br)
+
+
+## :wave: Agradecimentos
+
+Agradeço ao [Escritório de Dados](https://www.dados.rio/) pelo desafio proposto e pela oportunidade de aprendizado.
