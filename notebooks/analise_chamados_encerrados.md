@@ -1152,7 +1152,7 @@ display(
 </div>
 
 
-<p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">Criamos a variável <b>tempo_decorrido</b> que representa o tempo decorrido entre a abertura e o fechamento do chamado. A média de tempo decorrido é de 5 dias, com um desvio padrão de 7 dias. A mediana é de 3 dias, o que indica que a maioria dos chamados é fechada em até 3 dias.</p>
+<p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">Criamos a variável <b>tempo_decorrido</b> que representa o tempo decorrido entre a abertura e o fechamento do chamado. A média de tempo decorrido é de 5 dias, com um desvio padrão de 7 dias. A mediana é de 3 dias, o que indica vários chamados são fechados em até 3 dias.</p>
 
 
 
@@ -1241,6 +1241,10 @@ com 75% dos chamados finalizados em até 156 dias (5 meses)</p>
 
 
 
+<p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+A variável <b>urgente</b> foi criada para representar se o chamado tinha uma estimativa de tempo de até 24 horas para ser fechado. Para isso, usamos a diferença entre a data de início e a data alvo de finalização. Se a diferença for menor ou igual a 1, o chamado é considerado urgente.
+</p>
+
 
 ```python
 df["urgente"] = (
@@ -1261,6 +1265,10 @@ plot_distribution(
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_26_0.png)
 
 
+
+<p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+Outra variável criada foi <b>tempo_estimado_finalizar</b> que considera o tempo estimado para finalizar o chamado. Para isso, usamos a diferença entre a data de início e a data alvo de finalização.
+</p>
 
 
 ```python
@@ -1344,6 +1352,10 @@ plot_histogram(
 
 
 
+<p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+O mesmo foi feito para a variável <b>tempo_estimado_diagnostico</b> que considera o tempo estimado para diagnosticar o chamado. Para isso, usamos a diferença entre a data de início e a data alvo de diagnóstico.
+</p>
+
 
 ```python
 df["tempo_estimado_diagnosticar"] = (
@@ -1364,6 +1376,10 @@ plot_histogram(
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_28_0.png)
 
 
+
+<p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+Por fim, criamos variáveis que capturam aspectos temporais, sendo elas: <b>dia_semana</b>, <b>mes</b>, <b>dia_mes</b>, <b>estacao_ano</b> e <b>ano</b>.
+</p>
 
 
 ```python
