@@ -24,6 +24,57 @@
 <hr color="white" size=1 width=100% align="left"/>
 </div>
 
+
+```python
+import pandas as pd
+import pandas_gbq
+import matplotlib.pyplot as plt
+import numpy as np
+from textwrap import wrap
+from IPython.display import display, HTML
+from sentence_transformers import SentenceTransformer
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    ConfusionMatrixDisplay,
+)
+from sklearn.model_selection import train_test_split
+
+df = pd.read_parquet(
+    "../data/chamado_1746.parquet",
+    columns=[
+        "id_chamado",
+        "id_bairro",
+        "data_inicio",
+        "data_fim",
+        "tipo",
+        "subtipo",
+        "status",
+        "justificativa_status",
+        "nome_unidade_organizacional",
+        "unidade_organizacional_ouvidoria",
+        "data_alvo_finalizacao",
+        "data_alvo_diagnostico",
+        "tempo_prazo",
+        "prazo_unidade",
+        "prazo_tipo",
+        "dentro_prazo",
+        "situacao",
+        "reclamacoes",
+        "latitude",
+        "longitude",
+    ],
+)
+
+df = df.set_index("id_chamado")
+```
+
 ##
 <div align="center">
 <h2 style="color:#003A54; font-size: 30px; font-weight: bold;">2. Descrição dos Dados</h2>
@@ -162,6 +213,27 @@
     <p>Para a nossa análise, selecionamos algumas colunas que estavam mais relacionadas a situação do chamado, como a data de início e fim, o prazo para finalização, etc. </p>
 </div>
 
+
+
+```python
+display(
+    HTML(
+        f"""
+        <h3 style='color:#003A54; font-size: 25px; font-weight: bold;'>Primeiras linhas e últimas linhas do dataframe</h3>
+        <div style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+        <ul>
+            <li><b>Quantidade de linhas:</b> {df.shape[0]:,}</li>
+            <li><b>Quantidade de colunas:</b> {df.shape[1]}</li>
+            <li><b>Quantidade de valores únicos:</b> {df.nunique().sum():,}</li>
+        </ul>
+        </div
+        """
+    )
+)
+display(df.head())
+display(HTML("<hr/>"))
+display(df.tail())
+```
 
 
 
@@ -511,6 +583,31 @@
 
 
 
+```python
+display(
+    HTML(
+        f"""
+        <h3 style='color:#003A54; font-size: 25px; font-weight: bold;'>Resumo estatístico</h3>
+        <div style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+        <p>Usando o método <b>describe</b> do pandas, podemos ver um resumo estatístico das variáveis numéricas.</p>
+        <ul>
+            <li>O prazo costuma ser em sua maioria definido em dias, sendo a maioria do tipo F (finalização) e dentro do prazo.</li>
+            <li>A variável <var>tempo_prazo</var> possui apenas dois registros preenchidos, apesar do <var>prazo_unidade</var> e <var>prazo_tipo</var> estarem preenchidos.</li>
+            <li>O tipo de chamado mais comum foi "Estacionamento Irregular" e o subtipo "Fiscalização de estacionamento irregular de veículo"</li>
+            <li>A justificativa do status está em sua maioria vazia</li>
+            <li>A quantidade de reclamações é em sua maioria 0"</li>
+        </ul>
+        </div>
+        """
+    )
+)
+display(df.describe())
+display(HTML("<hr/>"))
+display(df.describe(include=[np.object_, "category"]))
+df.drop(columns=["tempo_prazo", "justificativa_status"], inplace=True)
+```
+
+
 
 <h3 style='color:#003A54; font-size: 25px; font-weight: bold;'>Resumo estatístico</h3>
 <div style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
@@ -735,10 +832,122 @@
 
 
 
+```python
+def plot_distribution(
+    df,
+    column,
+    title,
+    subtitle=None,
+    xlabel=None,
+    ylabel=None,
+    figsize=None,
+    color="#003A54",
+    top=None,
+    sort_index=False,
+):
+    x = df[column].value_counts(normalize=True) * 100
+    if top:
+        x = x.sort_values(ascending=False).head(top)
+
+    if sort_index:
+        x = x.sort_index()
+    _, ax = plt.subplots(figsize=figsize)
+    ax.bar(x.index, x.values, color=color, width=0.5)
+
+    ax.set_ylabel(ylabel if ylabel else "")
+    ax.set_xlabel(xlabel if xlabel else "")
+    ax.set_ylim(0, 100)
+    for i, v in enumerate(x):
+        ax.text(i, v + 1, f"{v:.2f}%", ha="center", va="bottom", fontsize=12)
+
+    ax.text(
+        -0.5,
+        115,
+        title,
+        fontsize=16,
+        fontweight="bold",
+        fontfamily="serif",
+        color="#003A54",
+    )
+
+    if subtitle:
+        ax.text(
+            -0.5,
+            108,
+            subtitle,
+            fontsize=12,
+            fontweight="light",
+            fontfamily="serif",
+            color="#003A54",
+        )
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    ax.spines["left"].set_color("#575757")
+    ax.spines["bottom"].set_color("#575757")
+
+    ax.tick_params(axis="x", colors="#575757")
+    ax.tick_params(axis="y", colors="#575757")
+
+    ax.set_xticks(x.index)
+
+    ax.set_xticklabels(
+        ["\n".join(wrap(l, 15)) for l in x.index], rotation=0, ha="center"
+    )
+
+    plt.show()
+
+
+def plot_histogram(data, column_name, title, figsize=None, width=None):
+    ax = data[column_name].plot(
+        kind="hist", bins=100, color="#003A54", figsize=figsize, width=width
+    )
+
+    ax.set_ylabel("Quantidade de chamados")
+    ax.set_xlabel("Tempo estimado (horas)")
+
+    ax.set_title(title)
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    ax.spines["left"].set_color("#575757")
+    ax.spines["bottom"].set_color("#575757")
+
+    ax.tick_params(axis="x", colors="#575757")
+    ax.tick_params(axis="y", colors="#575757")
+
+    plt.show()
+```
+
+
+```python
+plot_distribution(
+    df=df,
+    column="situacao",
+    title="Distribuição das situações dos chamados",
+    subtitle="A maioria dos chamados está com a situação 'Encerrado'",
+    color=["#003A54", "#E87722"],
+)
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_8_0.png)
 
 
+
+
+```python
+plot_distribution(
+    df=df,
+    column="dentro_prazo",
+    title="Distribuição de chamados dentro e fora do prazo",
+    subtitle="A maioria dos chamados foi finalizada dentro do prazo estipulado",
+    color=["#003A54", "#E87722"],
+)
+```
 
 
 
@@ -747,10 +956,33 @@
 
 
 
+```python
+# prazo_unidade dias horas
+plot_distribution(
+    df=df.replace({"prazo_unidade": {"D": "Dias", "H": "Horas"}}),
+    column="prazo_unidade",
+    title="Distribuição do prazo em dias e horas",
+    subtitle="A maioria dos chamados possui prazo definido em dias",
+    color=["#003A54", "#E87722"],
+)
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_10_0.png)
 
 
+
+
+```python
+plot_distribution(
+    df=df.replace({"prazo_tipo": {"F": "Finalização", "D": "Diagnóstico"}}),
+    column="prazo_tipo",
+    title="Distribuição do prazo de finalização e diagnóstico",
+    subtitle="A maioria dos chamados possui prazo de finalização",
+    color=["#003A54", "#E87722"],
+)
+```
 
 
 
@@ -759,12 +991,34 @@
 
 
 
+```python
+plot_distribution(
+    df=df,
+    column="status",
+    title="Distribuição dos status dos chamados",
+    subtitle="A maioria dos chamados está com o status 'Fechado com solução'",
+    figsize=(16, 4),
+)
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_12_0.png)
 
 
 
 <p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">Assim, vemos que 70,13% dos chamados são encerrados no prazo, em sua maioria com prazo definido em dias e sendo do tipo finalização. No entanto, o status "Fechado com solução" representa apenas 56,30% dos chamados abertos entre 2022 e 2023.</p>
+
+
+```python
+plot_distribution(
+    df=df.loc[df["situacao"] == "Encerrado"],
+    column="status",
+    title="Distribuição dos status dos chamados encerrados",
+    subtitle="A maioria dos chamados encerrados está com o status 'Fechado com solução'",
+    figsize=(12, 4),
+)
+```
 
 
 
@@ -780,6 +1034,20 @@
 <p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">As únicas variáveis numéricas que temos nessa seção são latitude, longitude e reclamações. Sendo que a para a maioria dos chamados consta o valor 0.</p>
 
 
+```python
+plot_distribution(
+    df=df["reclamacoes"]
+    .apply(lambda x: 1 if x > 0 else 0)
+    .replace({0: "Sem reclamações", 1: "Com reclamações"})
+    .to_frame(),
+    column="reclamacoes",
+    title="Distribuição das reclamações",
+    subtitle="Mais de 96% dos chamados não possuem reclamações cadastradas",
+    figsize=(4, 4),
+)
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_17_0.png)
 
@@ -788,12 +1056,28 @@
 <p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">A variável "reclamações" representa a quantidade de reclamações feitas para cada chamado. A maioria dos chamados não recebeu reclamação (0 reclamações), enquanto a segunda maior parte recebeu uma reclamação apenas.</p>
 
 
+```python
+plot_histogram(
+    df.loc[(df["reclamacoes"] > 0)],
+    "reclamacoes",
+    "Distribuição da quantidade de reclamações",
+    figsize=(6, 3),
+    width=1,
+)
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_19_0.png)
 
 
 
 <p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">Como há muitos valores zerados, não vamos considerar essa variável para a análise.</p>
+
+
+```python
+df.drop(columns=["reclamacoes"], inplace=True)
+```
 
 ###
 
@@ -807,6 +1091,26 @@
 </ul>
 
 
+
+
+```python
+display(
+    HTML(
+        f"""
+        <h4 style='color:#003A54; font-size: 23px; font-weight: bold;'>Valores nulos</h4>
+        <div style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+        <p>A variável <b>data_inicio</b> é a única que não possui valores nulos. Já as variáveis <b>data_fim</b>, <b>data_alvo_finalizacao</b> e <b>data_alvo_diagnostico</b> possuem 14,70%, 1,87% e 97,20% de valores nulos, respectivamente.</p>
+        </div>
+        """
+    )
+)
+
+display(
+    (df.select_dtypes(include=[np.datetime64]).isnull().sum() / df.shape[0] * 100)
+    .round(2)
+    .to_frame("Percentual de valores nulos (%)")
+)
+```
 
 
 
@@ -851,6 +1155,42 @@
 <p style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">Criamos a variável <b>tempo_decorrido</b> que representa o tempo decorrido entre a abertura e o fechamento do chamado. A média de tempo decorrido é de 5 dias, com um desvio padrão de 7 dias. A mediana é de 3 dias, o que indica que a maioria dos chamados é fechada em até 3 dias.</p>
 
 
+
+
+```python
+df["tempo_decorrido"] = (
+    df["data_fim"] - df["data_inicio"]
+).dt.total_seconds() / 3600  # em horas
+
+
+display(
+    HTML(
+        f"""
+        <h4 style='color:#003A54; font-size: 23px; font-weight: bold;'>Tempo decorrido</h4>
+        <div style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+        <p>Calculamos o tempo decorrido entre a data de início e a data de fim do chamado. A média do tempo decorrido foi aproximadamente 190 dias (6 meses)
+        com 75% dos chamados finalizados em até 156 dias (5 meses)</p>
+        </div>
+        """
+    )
+)
+
+display(
+    df["tempo_decorrido"]
+    .describe()
+    .apply(lambda x: round(x, 2))
+    .to_frame("Tempo em dias")
+    .T
+)
+
+plot_histogram(
+    df,
+    "tempo_decorrido",
+    "Distribuição do tempo decorrido",
+    figsize=(12, 3),
+    width=100,
+)
+```
 
 
 
@@ -902,10 +1242,59 @@ com 75% dos chamados finalizados em até 156 dias (5 meses)</p>
 
 
 
+```python
+df["urgente"] = (
+    df["data_alvo_finalizacao"] - df["data_inicio"]
+).dt.total_seconds() / 3600 <= 24  # em horas
+
+plot_distribution(
+    df=df.replace({"urgente": {True: "Em até 24h", False: "Mais de 24h"}}),
+    column="urgente",
+    title="Estimativa de finalização de chamados em até 1 dia",
+    subtitle="A maioria dos chamados não possui estimativa de finalização em até 1 dia",
+    figsize=(4, 4),
+)
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_26_0.png)
 
 
+
+
+```python
+df["tempo_estimado_finalizar"] = (
+    df["data_alvo_finalizacao"] - df["data_inicio"]
+).dt.total_seconds() / 3600  # em horas
+
+display(
+    HTML(
+        f"""
+        <h4 style='color:#003A54; font-size: 22px; font-weight: bold;'>Distribuição do tempo estimado para finalização</h4>
+        <div style="max-width:1200px; color:#003A54;text-align: justify;  font-size: 20px;">
+        <p>A média do tempo estimado para finalização é de aproximadamente 13 dias, sendo que até 75% dos chamados possuem estimativa de finalização em até 16 dias.</p>
+        </div>
+        """
+    )
+)
+
+display(
+    df["tempo_estimado_finalizar"]
+    .describe()
+    .apply(lambda x: round(x / 24, 1))
+    .to_frame("tempo em dias")
+    .T,
+)
+
+plot_histogram(
+    df,
+    "tempo_estimado_finalizar",
+    "Distribuição do tempo estimado para finalização",
+    figsize=(12, 3),
+    width=100,
+)
+```
 
 
 
@@ -956,10 +1345,139 @@ com 75% dos chamados finalizados em até 156 dias (5 meses)</p>
 
 
 
+```python
+df["tempo_estimado_diagnosticar"] = (
+    df["data_alvo_diagnostico"] - df["data_inicio"]
+).dt.total_seconds() / 3600  # em horas
+
+plot_histogram(
+    df,
+    "tempo_estimado_diagnosticar",
+    "Distribuição do tempo estimado para diagnóstico",
+    figsize=(12, 3),
+    width=10,
+)
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_28_0.png)
 
 
+
+
+```python
+df["dia_semana"] = pd.Categorical(
+    df["data_inicio"]
+    .dt.day_name()
+    .replace(
+        {
+            "Monday": "Segunda",
+            "Tuesday": "Terça",
+            "Wednesday": "Quarta",
+            "Thursday": "Quinta",
+            "Friday": "Sexta",
+            "Saturday": "Sábado",
+            "Sunday": "Domingo",
+        }
+    ),
+    categories=[
+        "Segunda",
+        "Terça",
+        "Quarta",
+        "Quinta",
+        "Sexta",
+        "Sábado",
+        "Domingo",
+    ],
+    ordered=True,
+)
+df["mes"] = pd.Categorical(
+    df["data_inicio"]
+    .dt.month_name()
+    .replace(
+        {
+            "January": "Janeiro",
+            "February": "Fevereiro",
+            "March": "Março",
+            "April": "Abril",
+            "May": "Maio",
+            "June": "Junho",
+            "July": "Julho",
+            "August": "Agosto",
+            "September": "Setembro",
+            "October": "Outubro",
+            "November": "Novembro",
+            "December": "Dezembro",
+        }
+    ),
+    categories=[
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+    ],
+    ordered=True,
+)
+df["dia_mes"] = df["data_inicio"].dt.day
+
+# Primavera:20 de março a 21 de junho
+# Verão:21 de junho a 23 de setembro
+# Outono:23 de setembro a 21 de dezembro
+# Inverno:21 de dezembro a 20 de março
+# Os anos de 2022 e 2023 não são bissextos, então fevereiro tem 28 dias
+
+# inverno primeira parte
+df.loc[df["data_inicio"].dt.dayofyear.between(0, 79), "estacao"] = "Inverno"
+# demais estações
+df.loc[df["data_inicio"].dt.dayofyear.between(79, 172), "estacao"] = "Primavera"
+df.loc[df["data_inicio"].dt.dayofyear.between(172, 266), "estacao"] = "Verão"
+df.loc[df["data_inicio"].dt.dayofyear.between(266, 355), "estacao"] = "Outono"
+# inverno segunda parte
+df.loc[df["data_inicio"].dt.dayofyear.between(355, 366), "estacao"] = "Inverno"
+
+df["estacao"] = pd.Categorical(
+    df["estacao"],
+    categories=["Primavera", "Verão", "Outono", "Inverno"],
+    ordered=True,
+)
+
+plot_distribution(
+    df=df,
+    column="dia_semana",
+    title="Distribuição dos chamados por dia da semana",
+    subtitle="A maioria dos chamados ocorreu na terça-feira",
+    figsize=(8, 4),
+    sort_index=True,
+)
+
+
+plot_distribution(
+    df=df,
+    column="mes",
+    title="Distribuição dos chamados por mês",
+    subtitle="A maioria dos chamados ocorreu em janeiro",
+    figsize=(12, 4),
+    sort_index=True,
+)
+
+
+plot_distribution(
+    df=df,
+    column="estacao",
+    title="Distribuição dos chamados por estação do ano",
+    subtitle="A maioria dos chamados ocorreu no inverno",
+    figsize=(8, 4),
+)
+```
 
 
 
@@ -986,8 +1504,108 @@ com 75% dos chamados finalizados em até 156 dias (5 meses)</p>
 </div>
 
 <div style="max-width:1200px; width:80%; margin:0 auto;color:#003A54;text-align: justify;  font-size: 20px;">
-<p>Nesta seção, desenvolvemos dois modelos de classificação, o primeiro para prever se um chamado foi encerrado com solução ou não, e o segundo para prever se foi encerrado no prazo ou não.</p>
+<p>Nesta seção, desenvolvemos dois modelos de classificação, o primeiro para prever se um chamado foi encerrado com solução ou não, e o segundo para prever se foi encerrado no prazo ou não. Para isso consideramos apenas os chamados com situação do tipo "Encerrado".</p>
 </div>
+
+
+```python
+def prepare_data(
+    dataset, target_col, numeric_cols, test_size=0.3, random_state=0, proportion=1.0
+):
+    X_train, X_test, y_train, y_test = train_test_split(
+        dataset.drop(columns=targets),
+        dataset[target_col],
+        test_size=test_size,
+        random_state=random_state,
+        stratify=dataset[target_col],
+    )
+
+    positives = (
+        y_train[y_train == y_train.unique()[0]]
+        .sample(
+            int(y_train[y_train == y_train.unique()[1]].shape[0] * proportion),
+            random_state=random_state,
+        )
+        .index
+    )
+
+    negatives = y_train[y_train == y_train.unique()[1]].index
+
+    X_train = pd.concat([X_train.loc[positives], X_train.loc[negatives]]).sample(
+        frac=1, random_state=random_state
+    )
+    y_train = y_train.loc[X_train.index]
+
+    numeric_cols = X_train.select_dtypes(include=["number"]).columns.tolist()
+
+    X_train[numeric_cols] = preprocessor.fit_transform(X_train[numeric_cols])
+    X_test[numeric_cols] = preprocessor.transform(X_test[numeric_cols])
+
+    return X_train, X_test, y_train, y_test
+
+
+def plot_pca_cumulative_variance(data, title, ax):
+    encoded_text = encode_text(data, model)
+    pca = PCA(n_components=100, random_state=0)
+    pca.fit(encoded_text)
+    ax.plot(np.cumsum(pca.explained_variance_ratio_))
+    ax.set_title(title)
+    ax.set_ylim(0, 1)
+    ax.set_xlim(0, 100)
+    ax.set_yticks(np.arange(0, 1.1, 0.1))
+
+
+def encode_text(texts: pd.Series, model: SentenceTransformer) -> np.ndarray:
+    unique_text = texts.unique()
+    encoded = model.encode(unique_text)
+    return encoded
+
+
+def pca_encode_text(texts, n_components=50):
+    return PCA(n_components=n_components).fit_transform(texts)
+
+
+targets = ["dentro_prazo", "status"]
+
+model = SentenceTransformer("distiluse-base-multilingual-cased-v2")
+
+scaler = StandardScaler()
+imputer = SimpleImputer(strategy="median")
+
+preprocessor = Pipeline(
+    steps=[
+        ("imputer", imputer),
+        ("scaler", scaler),
+    ]
+).set_output(transform="pandas")
+```
+
+<div style="max-width:1200px; width:80%; margin:0 auto;color:#003A54;text-align: justify;  font-size: 20px;">
+<p>Nós desconsideramos algumas colunas para essa tarefa de predição:</p>
+<ul>
+    <li><code>data_inicio</code>: Na seção anterior, derivamos algumas variáveis temporais que serão usadas na predição como estação do ano, dia da semana, etc.</li>
+    <li><code>data_fim</code>, <code>data_alvo_finalizacao</code> e <code>data_alvo_diagnostico</code>: São variáveis que nos informam sobre o encerramento do chamado, desse modo para o modelo de previsão de chamados encerrado no prazo ou fora do prazo, essas variáveis dariam dicas sobre isso.</li>
+    <li><code>tempo_decorrido</code>: É uma variável que corresponde a diferença entre a data de abertura e data de encerramento.</li>
+    <li><code>situacao</code>: É a variável que usamos para filtrar os chamados considerados "Encerrados".</li>
+</ul>
+</div>
+
+
+```python
+dataset = df.loc[df["situacao"] == "Encerrado"].drop(
+    columns=[
+        "data_inicio",
+        "data_fim",
+        "data_alvo_diagnostico",
+        "data_alvo_finalizacao",
+        "tempo_decorrido",
+        "unidade_organizacional_ouvidoria",
+        "situacao",
+    ],
+    errors="ignore",
+)
+dataset.shape
+```
 
 
 
@@ -997,12 +1615,119 @@ com 75% dos chamados finalizados em até 156 dias (5 meses)</p>
 
 
 
+```python
+dataset["prazo_unidade"] = dataset["prazo_unidade"].replace({"D": "dias", "H": "horas"})
+dataset["prazo_unidade"] = pd.Categorical(
+    dataset["prazo_unidade"], categories=["dias", "horas"], ordered=True
+)
+
+dataset["prazo_tipo"] = dataset["prazo_tipo"].replace(
+    {"D": "Diagnóstico", "F": "Finalização"}
+)
+dataset["prazo_tipo"] = pd.Categorical(
+    dataset["prazo_tipo"], categories=["Diagnóstico", "Finalização"], ordered=True
+)
+
+dataset["dentro_prazo"] = pd.Categorical(
+    dataset["dentro_prazo"], categories=["Fora do prazo", "No prazo"], ordered=True
+)
+
+dataset["status"] = dataset["status"].apply(
+    lambda x: "Fechado com solução" if x == "Fechado com solução" else "Outros"
+)
+
+dataset["status"] = pd.Categorical(
+    dataset["status"], categories=["Outros", "Fechado com solução"], ordered=True
+)
+```
+
+<div style="max-width:1200px; width:80%; margin:0 auto;color:#003A54;text-align: justify;  font-size: 20px;">
+<p>Nesse dataset, vamos usar três variáveis com campos textuais, sendo elas tipo, subtipo e nome da unidade organizacional. Para esses campos, fizemos a extração dos embeddings e aplicamos PCA para reduzir a dimensionalidade</p>
+</div>
+
+
+```python
+fig, axs = plt.subplots(1, 3, figsize=(20, 5))
+
+plot_pca_cumulative_variance(dataset["tipo"], "Tipo", axs[0])
+plot_pca_cumulative_variance(dataset["subtipo"], "Subtipo", axs[1])
+plot_pca_cumulative_variance(
+    dataset["nome_unidade_organizacional"], "Unidade organizacional", axs[2]
+)
+
+plt.show()
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_34_0.png)
 
 
 
+
+```python
+text_cols = ["tipo", "subtipo", "nome_unidade_organizacional"]
+
+encoded_cols = []
+
+for col, n_componentes in zip(text_cols, [70, 100, 80]):
+    encoded = encode_text(dataset[col], model)
+    pca_encoded = pca_encode_text(encoded, n_componentes)
+    mapping = dict(zip(dataset[col].unique(), pca_encoded))
+    mapped = dataset[col].map(mapping)
+    encoded_cols.append(
+        pd.DataFrame(np.array(mapped.tolist()), index=dataset.index).add_prefix(
+            f"{col}_"
+        )
+    )
+
+df_encoded = pd.concat(encoded_cols, axis=1)
+dataset = pd.concat([dataset, df_encoded], axis=1)
+dataset.drop(columns=text_cols, inplace=True, errors="ignore")
+```
+
+<div style="max-width:1200px; width:80%; margin:0 auto;color:#003A54;text-align: justify;  font-size: 20px;">
+<p>Para as demais colunas do tipo texto, aplicamos o OneHotEncoder para transformar as variáveis categóricas em numéricas.</p>
+</div>
+
+
+```python
+categorical_cols = (
+    dataset.select_dtypes(include=["category"])
+    .drop(columns=targets, errors="ignore")
+    .columns
+)
+
+one_hot_encoder = OneHotEncoder(sparse_output=False).set_output(transform="pandas")
+encoded = one_hot_encoder.fit_transform(dataset[categorical_cols])
+dataset["id_bairro"] = dataset["id_bairro"].fillna("-1").astype("category")
+dataset = pd.concat([dataset, encoded], axis=1).drop(columns=categorical_cols)
+```
+
+
+```python
+numeric_cols = dataset.select_dtypes(include=["number"]).columns.tolist()
+```
+
 ### Previsão de chamados no prazo
+
+
+```python
+X_train, X_test, y_train, y_test = prepare_data(
+    dataset, "dentro_prazo", numeric_cols, proportion=1
+)
+```
+
+
+```python
+clf = RandomForestClassifier(random_state=0, n_jobs=6)
+clf.fit(X_train[:100_000], y_train[:100_000])
+```
+
+```python
+y_pred = clf.predict(X_test)
+print(classification_report(y_test, y_pred))
+```
 
                    precision    recall  f1-score   support
 
@@ -1016,12 +1741,90 @@ com 75% dos chamados finalizados em até 156 dias (5 meses)</p>
 
 
 
+```python
+cm = confusion_matrix(y_test, y_pred, normalize="true")
+ax = ConfusionMatrixDisplay(cm, display_labels=clf.classes_).plot(
+    colorbar=False, cmap="Blues", values_format=".2f"
+)
+
+plt.title("")
+plt.xlabel("")
+plt.ylabel("")
+
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+
+plt.text(
+    -1.8,
+    1.0,
+    "Valores reais",
+    fontsize=14,
+    fontweight="bold",
+    fontfamily="serif",
+    color="#003A54",
+    rotation=90,
+)
+
+plt.text(
+    0.0,
+    2.0,
+    "Valores previstos",
+    fontsize=14,
+    fontweight="bold",
+    fontfamily="serif",
+    color="#003A54",
+)
+
+plt.text(
+    -1.5,
+    -1.0,
+    "Matriz de confusão normalizada",
+    fontsize=14,
+    weight="bold",
+    fontfamily="serif",
+    color="#003A54",
+)
+
+plt.text(
+    -1.6,
+    -0.6,
+    """
+    81% dos chamados, que foram encerrados fora do prazo,\n
+    foram classificados corretamente\n
+    """,
+    fontsize=12,
+    fontfamily="serif",
+    color="#003A54",
+    linespacing=0.5,
+)
+
+plt.show()
+```
+
+
 
 ![png](analise_chamados_encerrados_files/analise_chamados_encerrados_42_0.png)
 
 
 
 ### Previsão do status do chamado
+
+
+```python
+X_train, X_test, y_train, y_test = prepare_data(dataset, "status", numeric_cols)
+```
+
+
+```python
+clf = RandomForestClassifier(random_state=0, n_jobs=6)
+clf.fit(X_train[:100_000], y_train[:100_000])
+```
+
+
+```python
+y_pred = clf.predict(X_test)
+print(classification_report(y_test, y_pred))
+```
 
                          precision    recall  f1-score   support
 
@@ -1033,6 +1836,67 @@ com 75% dos chamados finalizados em até 156 dias (5 meses)</p>
            weighted avg       0.79      0.78      0.79    413955
 
 
+
+
+```python
+cm = confusion_matrix(y_test, y_pred, normalize="true")
+ax = ConfusionMatrixDisplay(cm, display_labels=clf.classes_).plot(
+    colorbar=False, cmap="Blues", values_format=".2f"
+)
+
+plt.title("")
+plt.xlabel("")
+plt.ylabel("")
+
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+
+plt.text(
+    -1.8,
+    1.0,
+    "Valores reais",
+    fontsize=14,
+    fontweight="bold",
+    fontfamily="serif",
+    color="#003A54",
+    rotation=90,
+)
+
+plt.text(
+    0.0,
+    2.0,
+    "Valores previstos",
+    fontsize=14,
+    fontweight="bold",
+    fontfamily="serif",
+    color="#003A54",
+)
+
+plt.text(
+    -1.5,
+    -1.0,
+    "Matriz de confusão normalizada",
+    fontsize=14,
+    weight="bold",
+    fontfamily="serif",
+    color="#003A54",
+)
+
+plt.text(
+    -1.6,
+    -0.6,
+    """
+    79% dos chamados, que foram fechados com solução, foram\n
+    previstos corretamente
+    """,
+    fontsize=12,
+    fontfamily="serif",
+    color="#003A54",
+    linespacing=0.5,
+)
+
+plt.show()
+```
 
 
 
