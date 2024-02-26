@@ -100,6 +100,7 @@ def display_cards(
             (
                 calls_during_events["durante_evento"].value_counts().idxmax()
                 if not calls_during_events.empty
+                and calls_during_events["durante_evento"].nunique() >= 1
                 else "Nenhum evento"
             ),
             "",
@@ -151,29 +152,34 @@ def dashboard(calls: pd.DataFrame, events: pd.DataFrame) -> None:
                     help="Selecione o período de análise",
                 )
 
+            with error_col:
+                try:
+                    min_date, max_date = dates
+                except ValueError:
+                    st.write("")
+                    st.error(
+                        "Você deve selecionar um período de análise com duas datas"
+                    )
+                    st.stop()
+
             with subtype_col:
+                calls = calls.loc[
+                    (calls.data_inicio.dt.date >= min_date)
+                    & (calls.data_inicio.dt.date <= max_date)
+                ]
                 subtypes = get_subtypes(calls)
+                default_subtype = (
+                    subtypes.index("Perturbação do sossego")
+                    if "Perturbação do sossego" in subtypes
+                    else 0
+                )
                 subtype = st.selectbox(
                     "Selecione o subtipo",
                     subtypes,
-                    index=subtypes.index("Perturbação do sossego"),
+                    index=default_subtype,
                     help="Selecione o subtipo de chamado para análise",
                 )
 
-        with error_col:
-            try:
-                min_date, max_date = dates
-            except ValueError:
-                st.write("")
-                st.error(
-                    "Você deve selecionar um período de análise com duas datas"
-                )
-                st.stop()
-
-    calls = calls.loc[
-        (calls.data_inicio.dt.date >= min_date)
-        & (calls.data_inicio.dt.date <= max_date)
-    ]
     filtered_calls = calls[calls.subtipo == subtype]
     calls_during_events = get_calls_with_event(filtered_calls, events)
 
