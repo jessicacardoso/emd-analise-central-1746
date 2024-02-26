@@ -27,4 +27,4 @@ A análise exploratória dos dados foi feita no notebook [Análise exploratória
 
 ## Previsão
 
-A previsão dos chamados foi feita no notebook de [análise chamados encerrados.ipynb](analise_chamados_encerrados.md). Também foi feita uma [clusterização](clusterizao.md) dos chamados para identificar grupos de chamados com características semelhantes.
+A previsão dos chamados foi feita no notebook de [análise chamados encerrados.ipynb](analise_chamados_encerrados.md). Também foi feita uma [clusterização](clusterizacao.md) dos chamados para identificar grupos de chamados com características semelhantes.
