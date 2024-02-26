@@ -159,7 +159,7 @@ A solução das questões propostas no desafio está disponível no diretório `
 ## :speech_balloon: Autora
 
 <a href="https://dev.to/jessicacardoso">
- <img style="border-radius: 50%;" src="https://media.dev.to/cdn-cgi/image/width=320,height=320,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F837381%2F33ef7bdf-5edd-4171-824c-317b16a8f916.gif" width="100px;" alt=""/>
+ <img style="border-radius: 50%;" src="https://avatars.githubusercontent.com/u/81103105?v=4" width="100px;" alt=""/>
  <br />
  <sub><b>Jessica Cardoso</b></sub></a> <a href="https://dev.to/jessicacardoso" title="Dev.to">🚀</a>
 
