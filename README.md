@@ -9,7 +9,6 @@
 
 <div align="center">
 
-<img src="https://img.shields.io/badge/-DVC-blue?style=flat-square&logo=dvc&logoColor=white&color=%239463CF" alt="DVC">
 <img src="https://img.shields.io/badge/-Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white" alt="Streamlit">
 <img src="https://img.shields.io/badge/-Plotly-3F4F75?style=flat-square&logo=plotly&logoColor=white" alt="Plotly">
 <img src="https://img.shields.io/badge/-Pandas-150458?style=flat-square&logo=pandas&logoColor=white" alt="Pandas">
@@ -56,37 +55,11 @@ Este projeto consiste em um dashboard interativo para visualização e análise 
 Antes de executar a aplicação, certifique-se de ter os seguintes pré-requisitos instalados e configurados em sua máquina:
 
 - Ambiente com Python 3.10
-- [DVC](https://dvc.org/doc/install) com suporte ao Google Drive
 - [Docker](https://docs.docker.com/manuals/) (caso opte por executar a aplicação via Docker)
 - [Poetry](https://python-poetry.org/docs/#installation) (caso opte por utilizar Poetry)
 
 
 Além disso, é necessário baixar os dados necessários para a aplicação via DVC do Google Drive. Para baixar os dados, execute os seguintes comandos:
-
-
-
-
-```bash
-# Instale o DVC com suporte ao Google Drive (caso ainda não tenha instalado)
-python -m pip install "dvc[gdrive]"
-
-# Clone o repositório
-git clone https://github.com/jessicacardoso/emd-analise-central-1746.git
-
-# Acesse o diretório do projeto
-cd emd-analise-central-1746
-
-# Baixe os dados necessários no diretório data
-dvc get https://github.com/jessicacardoso/emd-analise-central-1746/ \
-    data/rede_hoteleira_ocupacao_eventos.parquet \
-    -o data/rede_hoteleira_ocupacao_eventos.parquet
-
-dvc get https://github.com/jessicacardoso/emd-analise-central-1746/ \
-    data/bairro.parquet -o data/bairro.parquet
-
-dvc get https://github.com/jessicacardoso/emd-analise-central-1746/ \
-    data/chamado_1746.parquet -o data/chamado_1746.parquet
-```
 
 ## :rocket: Como Rodar o Projeto
 
